@@ -90,6 +90,11 @@ inline ThreadPool::~ThreadPool()
         std::unique_lock<std::mutex> lock(queue_mutex);
         stop = true;
     }
+    
+    //did not pop tasks, it's maybe memery leak.
+    while (!tasks.empty())
+      tasks.pop();
+    
     condition.notify_all();
     for(std::thread &worker: workers)
         worker.join();
